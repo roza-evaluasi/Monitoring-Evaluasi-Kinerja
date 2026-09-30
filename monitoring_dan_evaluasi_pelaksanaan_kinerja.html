@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring dan Evaluasi Pelaksanaan Kinerja</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background: white;
+                color: black;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Header App -->
+    <header class="bg-gradient-to-r from-slate-900 via-brand-900 to-slate-900 text-white shadow-lg sticky top-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateToView(1)">
+                <div class="w-11 h-11 rounded-xl bg-brand-500/20 border border-brand-400/30 flex items-center justify-center text-brand-400 shadow-inner">
+                    <i class="fa-solid me-0.5 fa-chart-line text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-snug tracking-tight">E-Monev Kinerja</h1>
+                    <p class="text-xs text-brand-200">Sistem Monitoring & Evaluasi Pelaksanaan Kinerja</p>
+                </div>
+            </div>
+
+            <!-- Breadcrumbs Indicator -->
+            <div class="hidden md:flex items-center space-x-2 text-xs font-medium text-slate-300 bg-slate-800/60 px-4 py-2 rounded-full border border-slate-700/50">
+                <span id="step1-indicator" class="flex items-center text-brand-400 font-semibold">
+                    <span class="w-5 h-5 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px] mr-1.5">1</span>
+                    Pilih Tahun
+                </span>
+                <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+                <span id="step2-indicator" class="flex items-center text-slate-400">
+                    <span class="w-5 h-5 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center text-[10px] mr-1.5">2</span>
+                    Bidang & TW
+                </span>
+                <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+                <span id="step3-indicator" class="flex items-center text-slate-400">
+                    <span class="w-5 h-5 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center text-[10px] mr-1.5">3</span>
+                    Form Evaluasi
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Notification Toast -->
+        <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 ease-out bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 border border-slate-700 pointer-events-none">
+            <i id="toast-icon" class="fa-solid fa-check-circle text-emerald-400 text-lg"></i>
+            <span id="toast-message" class="text-sm font-medium">Data berhasil disimpan</span>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: TAMPILAN UTAMA (PILIH TAHUN) -->
+        <!-- ========================================== -->
+        <section id="view-1" class="transition-all duration-300">
+            <!-- Hero Header -->
+            <div class="text-center max-w-3xl mx-auto my-6 sm:my-10 space-y-3">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-brand-100 text-brand-800 border border-brand-200">
+                    <i class="fa-solid fa-layer-group mr-1.5"></i> Portal Resmi Evaluasi Pelaksanaan Kinerja
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Monitoring dan Evaluasi <br class="hidden sm:inline"/><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">Pelaksanaan Kinerja</span>
+                </h2>
+                <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                    Pilih tahun anggaran pelaksanaan kegiatan untuk memulai pengisian, penelaahan, serta pemantauan kinerja unit kerja secara real-time.
+                </p>
+            </div>
+
+            <!-- Card Selector Tahun -->
+            <div class="mt-8 max-w-5xl mx-auto">
+                <div class="flex items-center justify-between mb-4 px-1">
+                    <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Pilih Tahun Anggaran</h3>
+                    <span class="text-xs text-slate-400"><i class="fa-solid fa-info-circle mr-1"></i>Klik pada tahun untuk melanjutkan</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+                    <!-- 2025 -->
+                    <button onclick="selectYear('2025')" class="group relative bg-white hover:bg-gradient-to-br hover:from-brand-600 hover:to-indigo-700 p-6 rounded-2xl shadow-sm hover:shadow-xl border border-slate-200/80 hover:border-transparent transition-all duration-300 text-left flex flex-col justify-between h-48 overflow-hidden transform hover:-translate-y-1">
+                        <div class="flex justify-between items-start w-full">
+                            <span class="text-2xl font-black text-slate-800 group-hover:text-white transition-colors">2025</span>
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-white/20 flex items-center justify-center text-slate-500 group-hover:text-white transition-colors">
+                                <i class="fa-regular fa-calendar text-lg"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-xs font-medium text-slate-400 group-hover:text-brand-100 transition-colors">Tahun Anggaran</div>
+                            <div class="text-sm font-semibold text-slate-700 group-hover:text-white mt-0.5 flex items-center">
+                                Pilih Tahun <i class="fa-solid fa-arrow-right ml-2 text-xs opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all"></i>
+                            </div>
+                        </div>
+                        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-brand-500/5 rounded-full group-hover:bg-white/10 transition-colors"></div>
+                    </button>
+
+                    <!-- 2026 -->
+                    <button onclick="selectYear('2026')" class="group relative bg-white hover:bg-gradient-to-br hover:from-brand-600 hover:to-indigo-700 p-6 rounded-2xl shadow-sm hover:shadow-xl border border-slate-200/80 hover:border-transparent transition-all duration-300 text-left flex flex-col justify-between h-48 overflow-hidden transform hover:-translate-y-1">
+                        <div class="flex justify-between items-start w-full">
+                            <span class="text-2xl font-black text-slate-800 group-hover:text-white transition-colors">2026</span>
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-white/20 flex items-center justify-center text-slate-500 group-hover:text-white transition-colors">
+                                <i class="fa-regular fa-calendar text-lg"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-xs font-medium text-slate-400 group-hover:text-brand-100 transition-colors">Tahun Anggaran</div>
+                            <div class="text-sm font-semibold text-slate-700 group-hover:text-white mt-0.5 flex items-center">
+                                Pilih Tahun <i class="fa-solid fa-arrow-right ml-2 text-xs opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all"></i>
+                            </div>
+                        </div>
+                        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-brand-500/5 rounded-full group-hover:bg-white/10 transition-colors"></div>
+                    </button>
+
+                    <!-- 2027 -->
+                    <button onclick="selectYear('2027')" class="group relative bg-white hover:bg-gradient-to-br hover:from-brand-600 hover:to-indigo-700 p-6 rounded-2xl shadow-sm hover:shadow-xl border border-slate-200/80 hover:border-transparent transition-all duration-300 text-left flex flex-col justify-between h-48 overflow-hidden transform hover:-translate-y-1">
+                        <div class="flex justify-between items-start w-full">
+                            <span class="text-2xl font-black text-slate-800 group-hover:text-white transition-colors">2027</span>
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-white/20 flex items-center justify-center text-slate-500 group-hover:text-white transition-colors">
+                                <i class="fa-regular fa-calendar text-lg"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-xs font-medium text-slate-400 group-hover:text-brand-100 transition-colors">Tahun Anggaran</div>
+                            <div class="text-sm font-semibold text-slate-700 group-hover:text-white mt-0.5 flex items-center">
+                                Pilih Tahun <i class="fa-solid fa-arrow-right ml-2 text-xs opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all"></i>
+                            </div>
+                        </div>
+                        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-brand-500/5 rounded-full group-hover:bg-white/10 transition-colors"></div>
+                    </button>
+
+                    <!-- 2028 -->
+                    <button onclick="selectYear('2028')" class="group relative bg-white hover:bg-gradient-to-br hover:from-brand-600 hover:to-indigo-700 p-6 rounded-2xl shadow-sm hover:shadow-xl border border-slate-200/80 hover:border-transparent transition-all duration-300 text-left flex flex-col justify-between h-48 overflow-hidden transform hover:-translate-y-1">
+                        <div class="flex justify-between items-start w-full">
+                            <span class="text-2xl font-black text-slate-800 group-hover:text-white transition-colors">2028</span>
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-white/20 flex items-center justify-center text-slate-500 group-hover:text-white transition-colors">
+                                <i class="fa-regular fa-calendar text-lg"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-xs font-medium text-slate-400 group-hover:text-brand-100 transition-colors">Tahun Anggaran</div>
+                            <div class="text-sm font-semibold text-slate-700 group-hover:text-white mt-0.5 flex items-center">
+                                Pilih Tahun <i class="fa-solid fa-arrow-right ml-2 text-xs opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all"></i>
+                            </div>
+                        </div>
+                        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-brand-500/5 rounded-full group-hover:bg-white/10 transition-colors"></div>
+                    </button>
+
+                    <!-- 2029 -->
+                    <button onclick="selectYear('2029')" class="group relative bg-white hover:bg-gradient-to-br hover:from-brand-600 hover:to-indigo-700 p-6 rounded-2xl shadow-sm hover:shadow-xl border border-slate-200/80 hover:border-transparent transition-all duration-300 text-left flex flex-col justify-between h-48 overflow-hidden transform hover:-translate-y-1">
+                        <div class="flex justify-between items-start w-full">
+                            <span class="text-2xl font-black text-slate-800 group-hover:text-white transition-colors">2029</span>
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-white/20 flex items-center justify-center text-slate-500 group-hover:text-white transition-colors">
+                                <i class="fa-regular fa-calendar text-lg"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-xs font-medium text-slate-400 group-hover:text-brand-100 transition-colors">Tahun Anggaran</div>
+                            <div class="text-sm font-semibold text-slate-700 group-hover:text-white mt-0.5 flex items-center">
+                                Pilih Tahun <i class="fa-solid fa-arrow-right ml-2 text-xs opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all"></i>
+                            </div>
+                        </div>
+                        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-brand-500/5 rounded-full group-hover:bg-white/10 transition-colors"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats/Information Section -->
+            <div class="mt-12 max-w-5xl mx-auto bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-sitemap"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-slate-800 text-sm">4 Bidang / Subbagian</h4>
+                        <p class="text-xs text-slate-500">Sekretariat, Promosi Mutasi, PPI, PK PKA</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-slate-800 text-sm">4 Triwulan Evaluasi</h4>
+                        <p class="text-xs text-slate-500">Pelaporan bertahap TW I, TW II, TW III, TW IV</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-slate-800 text-sm">Penyimpanan Terintegrasi</h4>
+                        <p class="text-xs text-slate-500">Data tersimpan aman otomatis di lokal browser</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: PILIH BIDANG & TRIWULAN -->
+        <!-- ========================================== -->
+        <section id="view-2" class="hidden transition-all duration-300">
+            <!-- Navigation Back & Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-200">
+                <div>
+                    <button onclick="navigateToView(1)" class="inline-flex items-center text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors mb-2">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Pilih Tahun
+                    </button>
+                    <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-3">
+                        <span>Pilih Bidang & Triwulan Evaluasi</span>
+                        <span id="display-selected-year" class="px-3 py-1 bg-brand-100 text-brand-800 text-sm font-bold rounded-lg border border-brand-200">
+                            Tahun 2025
+                        </span>
+                    </h2>
+                </div>
+            </div>
+
+            <!-- List Bidang Accordion / Grid -->
+            <div class="space-y-6 max-w-5xl mx-auto">
+                <p class="text-sm text-slate-600">Silakan pilih salah satu Bidang/Subbagian, kemudian tentukan Triwulan (TW) yang akan dievaluasi:</p>
+
+                <div class="grid grid-cols-1 gap-6">
+
+                    <!-- BIDANG 1: Sekretariat -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:border-brand-300 transition-all">
+                        <div class="p-6 bg-slate-50/50 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-brand-50 border border-brand-100 text-brand-600 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-building"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-800">Sekretariat</h3>
+                                    <p class="text-xs text-slate-500 mt-0.5">Pengelolaan tata usaha, keuangaan, kepegawaian internal, dan rumah tangga</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 bg-white">
+                            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Pilih Triwulan Evaluasi:</div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <button onclick="selectBidangAndTW('Sekretariat', 'TW I')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW I (Triwulan I)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                                <button onclick="selectBidangAndTW('Sekretariat', 'TW II')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW II (Triwulan II)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                                <button onclick="selectBidangAndTW('Sekretariat', 'TW III')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW III (Triwulan III)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                                <button onclick="selectBidangAndTW('Sekretariat', 'TW IV')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW IV (Triwulan IV)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BIDANG 2: Promosi Mutasi -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:border-brand-300 transition-all">
+                        <div class="p-6 bg-slate-50/50 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 text-purple-600 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-user-gear"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-800">Promosi Mutasi</h3>
+                                    <p class="text-xs text-slate-500 mt-0.5">Pengelolaan promosi jabatan, mutasi antar instansi, serta kepangkatan ASN</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 bg-white">
+                            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Pilih Triwulan Evaluasi:</div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <button onclick="selectBidangAndTW('Promosi Mutasi', 'TW I')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW I (Triwulan I)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                                <button onclick="selectBidangAndTW('Promosi Mutasi', 'TW II')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW II (Triwulan II)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                                <button onclick="selectBidangAndTW('Promosi Mutasi', 'TW III')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW III (Triwulan III)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                                <button onclick="selectBidangAndTW('Promosi Mutasi', 'TW IV')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW IV (Triwulan IV)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BIDANG 3: PPI -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:border-brand-300 transition-all">
+                        <div class="p-6 bg-slate-50/50 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-address-card"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-800">PPI (Pengadaan, Pemberhentian dan Informasi)</h3>
+                                    <p class="text-xs text-slate-500 mt-0.5">Pengadaan pegawai, proses pensiun/pemberhentian, dan sistem informasi kepegawaian</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 bg-white">
+                            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Pilih Triwulan Evaluasi:</div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <button onclick="selectBidangAndTW('PPI', 'TW I')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW I (Triwulan I)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                                <button onclick="selectBidangAndTW('PPI', 'TW II')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW II (Triwulan II)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                                <button onclick="selectBidangAndTW('PPI', 'TW III')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW III (Triwulan III)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                                <button onclick="selectBidangAndTW('PPI', 'TW IV')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW IV (Triwulan IV)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BIDANG 4: PK PKA -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:border-brand-300 transition-all">
+                        <div class="p-6 bg-slate-50/50 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                                    <i class="fa-solid fa-user-graduate"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-800">PK PKA (Pengembangan Karir & Penilaian Kinerja ASN)</h3>
+                                    <p class="text-xs text-slate-500 mt-0.5">Pengembangan kompetensi, diklat, manajemen bakat, serta penilaian SKP ASN</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 bg-white">
+                            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Pilih Triwulan Evaluasi:</div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <button onclick="selectBidangAndTW('PK PKA', 'TW I')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW I (Triwulan I)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                                <button onclick="selectBidangAndTW('PK PKA', 'TW II')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW II (Triwulan II)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                                <button onclick="selectBidangAndTW('PK PKA', 'TW III')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW III (Triwulan III)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                                <button onclick="selectBidangAndTW('PK PKA', 'TW IV')" class="p-3 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 text-slate-700 hover:text-brand-700 text-sm font-semibold flex items-center justify-between group transition-all">
+                                    <span>TW IV (Triwulan IV)</span>
+                                    <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-brand-600 transition-colors"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 3: FORM ISIAN EVALUASI KINERJA -->
+        <!-- ========================================== -->
+        <section id="view-3" class="hidden transition-all duration-300">
+            <!-- Header Nav & Context Badges -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-200 no-print">
+                <div>
+                    <button onclick="navigateToView(2)" class="inline-flex items-center text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors mb-2">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Pilih Bidang & TW
+                    </button>
+                    <h2 class="text-2xl font-bold text-slate-900 flex flex-wrap items-center gap-2">
+                        <span>Form Evaluasi Pelaksanaan Kinerja</span>
+                    </h2>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span id="badge-year" class="px-3 py-1.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-200 flex items-center gap-1.5">
+                        <i class="fa-regular fa-calendar text-brand-600"></i> Tahun 2025
+                    </span>
+                    <span id="badge-bidang" class="px-3 py-1.5 bg-brand-50 text-brand-700 text-xs font-bold rounded-lg border border-brand-200 flex items-center gap-1.5">
+                        <i class="fa-solid fa-sitemap text-brand-600"></i> Sekretariat
+                    </span>
+                    <span id="badge-tw" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg border border-indigo-200 flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-pie text-indigo-600"></i> TW I
+                    </span>
+                </div>
+            </div>
+
+            <!-- Print Header (Only visible on print) -->
+            <div class="hidden print-only mb-6 border-b pb-4">
+                <h1 class="text-xl font-bold text-center uppercase">Laporan Form Evaluasi Kinerja</h1>
+                <div class="flex justify-between text-xs mt-4">
+                    <p><strong>Tahun:</strong> <span id="print-year">-</span></p>
+                    <p><strong>Bidang:</strong> <span id="print-bidang">-</span></p>
+                    <p><strong>Triwulan:</strong> <span id="print-tw">-</span></p>
+                </div>
+            </div>
+
+            <form id="evaluation-form" onsubmit="handleFormSubmit(event)" class="space-y-8">
+
+                <!-- SECTION 1: Indikator & Target Kinerja -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm space-y-6">
+                    <div class="flex items-center space-x-3 border-b border-slate-100 pb-4">
+                        <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">1</div>
+                        <h3 class="text-base font-bold text-slate-800">Indikator Kinerja & Target</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2 space-y-1.5">
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Nama Program / Kegiatan <span class="text-rose-500">*</span></label>
+                            <input type="text" id="program_nama" required placeholder="Contoh: Pengelolaan Layanan Administrasi Kepegawaian Dan Keuangan" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Target Kinerja (%) <span class="text-rose-500">*</span></label>
+                            <input type="number" min="0" max="100" step="0.1" id="target_kinerja" required placeholder="Contoh: 100" oninput="calculateCapaian()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Realisasi Kinerja (%) <span class="text-rose-500">*</span></label>
+                            <input type="number" min="0" max="100" step="0.1" id="realisasi_kinerja" required placeholder="Contoh: 85.5" oninput="calculateCapaian()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none">
+                        </div>
+
+                        <!-- Automated Calculation Result -->
+                        <div class="md:col-span-2 bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div>
+                                <span class="text-xs font-medium text-slate-500">Persentase Capaian Kinerja:</span>
+                                <div class="text-2xl font-black text-slate-800" id="capaian_display">0%</div>
+                            </div>
+                            <div id="capaian_status_badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-200 text-slate-600">
+                                Belum dihitung
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: Form Isian Evaluasi Deskriptif -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm space-y-6">
+                    <div class="flex items-center space-x-3 border-b border-slate-100 pb-4">
+                        <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">2</div>
+                        <h3 class="text-base font-bold text-slate-800">Uraian Evaluasi Kinerja</h3>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">1. Realisasi Output / Outcome Kegiatan <span class="text-rose-500">*</span></label>
+                            <textarea id="realisasi_output" rows="3" required placeholder="Jelaskan secara rinci capaian output fisik, dokumen, atau hasil kegiatan yang telah diselesaikan pada triwulan ini..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none"></textarea>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">2. Kendala / Hambatan Pelaksanaan <span class="text-rose-500">*</span></label>
+                            <textarea id="kendala" rows="3" required placeholder="Uraikan kendala teknis, anggaran, SDM, atau administrasi yang dihadapi selama pelaksanaan kegiatan..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none"></textarea>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">3. Tindak Lanjut / Rencana Aksi Perbaikan <span class="text-rose-500">*</span></label>
+                            <textarea id="tindak_lanjut" rows="3" required placeholder="Tuliskan langkah konkret atau perbaikan yang akan dilakukan untuk mengatasi kendala tersebut di periode berikutnya..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none"></textarea>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">4. Catatan Evaluator / Tim Evaluasi Kinerja</label>
+                            <textarea id="catatan_evaluator" rows="3" placeholder="(Opsional) Catatan atau masukan dari pimpinan / Tim Evaluasi Internal..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all outline-none bg-slate-50/50"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Bar & Controls -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 no-print">
+                    <div class="flex items-center space-x-2 text-xs text-slate-500">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Status Evaluasi: <strong id="status-label" class="text-slate-700">Draft Belum Disimpan</strong></span>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+                        <button type="button" onclick="saveDraft()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold text-sm transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-regular fa-floppy-disk"></i>
+                            <span>Simpan Draft</span>
+                        </button>
+                        <button type="submit" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-all shadow-md shadow-brand-500/20 flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Simpan & Finalisasi</span>
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+
+            <!-- Table Summary of Saved Evaluations -->
+            <div class="mt-12 bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm no-print">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Rekapitulasi Evaluasi Tersimpan</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Daftar evaluasi kinerja yang telah tersimpan di sistem lokal</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="window.print()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold flex items-center gap-2 transition-all">
+                            <i class="fa-solid fa-print"></i>
+                            <span>Cetak Form Current</span>
+                        </button>
+                        <button onclick="exportDataJSON()" class="px-4 py-2 rounded-xl bg-slate-800 text-white hover:bg-slate-900 text-xs font-semibold flex items-center gap-2 transition-all">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Ekspor Backup JSON</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-y border-slate-200 text-xs font-semibold text-slate-500 uppercase">
+                                <th class="py-3 px-4">Tahun</th>
+                                <th class="py-3 px-4">Bidang</th>
+                                <th class="py-3 px-4">Triwulan</th>
+                                <th class="py-3 px-4">Program / Kegiatan</th>
+                                <th class="py-3 px-4 text-center">Capaian</th>
+                                <th class="py-3 px-4 text-center">Status</th>
+                                <th class="py-3 px-4 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summary-table-body" class="divide-y divide-slate-100">
+                            <!-- Table Rows populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-auto no-print">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            <p>&copy; Monitoring dan Evaluasi Pelaksanaan Kinerja - Sistem Informasi Manajemen Kinerja ASN.</p>
+        </div>
+    </footer>
+
+    <!-- App Dynamic Script Logic -->
+    <script>
+        // State Application
+        let currentView = 1;
+        let activeYear = '2025';
+        let activeBidang = 'Sekretariat';
+        let activeTW = 'TW I';
+
+        // Load Application State on Initial Load
+        window.onload = function () {
+            renderSummaryTable();
+        };
+
+        // Navigation Controller
+        function navigateToView(viewNumber) {
+            currentView = viewNumber;
+
+            // Hide all views
+            document.getElementById('view-1').classList.add('hidden');
+            document.getElementById('view-2').classList.add('hidden');
+            document.getElementById('view-3').classList.add('hidden');
+
+            // Show selected view
+            document.getElementById(`view-${viewNumber}`).classList.remove('hidden');
+
+            // Update Breadcrumb UI
+            updateBreadcrumbs(viewNumber);
+
+            // Scroll Top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateBreadcrumbs(step) {
+            const step1 = document.getElementById('step1-indicator');
+            const step2 = document.getElementById('step2-indicator');
+            const step3 = document.getElementById('step3-indicator');
+
+            // Reset classes
+            [step1, step2, step3].forEach((el, index) => {
+                const num = el.querySelector('span');
+                if (index + 1 <= step) {
+                    el.className = "flex items-center text-brand-400 font-semibold";
+                    num.className = "w-5 h-5 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px] mr-1.5";
+                } else {
+                    el.className = "flex items-center text-slate-400";
+                    num.className = "w-5 h-5 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center text-[10px] mr-1.5";
+                }
+            });
+        }
+
+        // View 1 -> View 2 Transition
+        function selectYear(year) {
+            activeYear = year;
+            document.getElementById('display-selected-year').textContent = `Tahun ${year}`;
+            navigateToView(2);
+        }
+
+        // View 2 -> View 3 Transition
+        function selectBidangAndTW(bidang, tw) {
+            activeBidang = bidang;
+            activeTW = tw;
+
+            // Update View 3 Header Context Badges
+            document.getElementById('badge-year').innerHTML = `<i class="fa-regular fa-calendar text-brand-600"></i> Tahun ${activeYear}`;
+            document.getElementById('badge-bidang').innerHTML = `<i class="fa-solid fa-sitemap text-brand-600"></i> ${activeBidang}`;
+            document.getElementById('badge-tw').innerHTML = `<i class="fa-solid fa-chart-pie text-indigo-600"></i> ${activeTW}`;
+
+            // Update Print Texts
+            document.getElementById('print-year').textContent = activeYear;
+            document.getElementById('print-bidang').textContent = activeBidang;
+            document.getElementById('print-tw').textContent = activeTW;
+
+            // Load Existing Data if Available
+            loadFormData();
+
+            navigateToView(3);
+        }
+
+        function calculateCapaian() {
+            const target = parseFloat(document.getElementById('target_kinerja').value) || 0;
+            const realisasi = parseFloat(document.getElementById('realisasi_kinerja').value) || 0;
+            const display = document.getElementById('capaian_display');
+            const badge = document.getElementById('capaian_status_badge');
+
+            if (target === 0) {
+                display.textContent = '0%';
+                badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-slate-200 text-slate-600";
+                badge.textContent = "Belum dihitung";
+                return 0;
+            }
+
+            const capaian = ((realisasi / target) * 100).toFixed(1);
+            display.textContent = `${capaian}%`;
+
+            if (capaian >= 90) {
+                badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200";
+                badge.textContent = "Sangat Baik";
+            } else if (capaian >= 75) {
+                badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200";
+                badge.textContent = "Baik";
+            } else if (capaian >= 60) {
+                badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200";
+                badge.textContent = "Cukup";
+            } else {
+                badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200";
+                badge.textContent = "Perlu Perbaikan";
+            }
+
+            return capaian;
+        }
+
+        // Storage Key Helper
+        function getStorageKey() {
+            return `monev_${activeYear}_${activeBidang}_${activeTW}`.replace(/\s+/g, '_');
+        }
+
+        function loadFormData() {
+            const key = getStorageKey();
+            const rawData = localStorage.getItem(key);
+
+            // Reset form first
+            document.getElementById('evaluation-form').reset();
+            document.getElementById('capaian_display').textContent = '0%';
+            document.getElementById('capaian_status_badge').className = "px-3 py-1 rounded-full text-xs font-semibold bg-slate-200 text-slate-600";
+            document.getElementById('capaian_status_badge').textContent = "Belum dihitung";
+            document.getElementById('status-label').textContent = "Draft Belum Disimpan";
+            document.getElementById('status-label').className = "text-slate-700";
+
+            if (rawData) {
+                try {
+                    const data = JSON.parse(rawData);
+                    document.getElementById('program_nama').value = data.program_nama || '';
+                    document.getElementById('target_kinerja').value = data.target_kinerja || '';
+                    document.getElementById('realisasi_kinerja').value = data.realisasi_kinerja || '';
+                    document.getElementById('realisasi_output').value = data.realisasi_output || '';
+                    document.getElementById('kendala').value = data.kendala || '';
+                    document.getElementById('tindak_lanjut').value = data.tindak_lanjut || '';
+                    document.getElementById('catatan_evaluator').value = data.catatan_evaluator || '';
+
+                    calculateCapaian();
+
+                    if (data.isFinalized) {
+                        document.getElementById('status-label').textContent = "Final Tersimpan";
+                        document.getElementById('status-label').className = "text-emerald-600 font-bold";
+                    } else {
+                        document.getElementById('status-label').textContent = "Draft Tersimpan";
+                        document.getElementById('status-label').className = "text-amber-600 font-semibold";
+                    }
+                } catch (e) {
+                    console.error("Gagal membaca data dari LocalStorage", e);
+                }
+            }
+        }
+
+        function saveFormData(isFinalized = false) {
+            const key = getStorageKey();
+            const formData = {
+                year: activeYear,
+                bidang: activeBidang,
+                tw: activeTW,
+                program_nama: document.getElementById('program_nama').value,
+                target_kinerja: document.getElementById('target_kinerja').value,
+                realisasi_kinerja: document.getElementById('realisasi_kinerja').value,
+                capaian: calculateCapaian(),
+                realisasi_output: document.getElementById('realisasi_output').value,
+                kendala: document.getElementById('kendala').value,
+                tindak_lanjut: document.getElementById('tindak_lanjut').value,
+                catatan_evaluator: document.getElementById('catatan_evaluator').value,
+                isFinalized: isFinalized,
+                updatedAt: new Date().toLocaleString('id-ID')
+            };
+
+            localStorage.setItem(key, JSON.stringify(formData));
+
+            showToast(isFinalized ? "Evaluasi berhasil di-finalisasi!" : "Draft berhasil disimpan!");
+            
+            if (isFinalized) {
+                document.getElementById('status-label').textContent = "Final Tersimpan";
+                document.getElementById('status-label').className = "text-emerald-600 font-bold";
+            } else {
+                document.getElementById('status-label').textContent = "Draft Tersimpan";
+                document.getElementById('status-label').className = "text-amber-600 font-semibold";
+            }
+
+            renderSummaryTable();
+        }
+
+        function saveDraft() {
+            saveFormData(false);
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            saveFormData(true);
+        }
+
+        function renderSummaryTable() {
+            const tbody = document.getElementById('summary-table-body');
+            tbody.innerHTML = '';
+
+            let hasData = false;
+
+            // Iterate localStorage keys
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('monev_')) {
+                    hasData = true;
+                    try {
+                        const item = JSON.parse(localStorage.getItem(key));
+                        const tr = document.createElement('tr');
+                        tr.className = "hover:bg-slate-50/80 transition-colors";
+
+                        tr.innerHTML = `
+                            <td class="py-3 px-4 font-semibold text-slate-800">${item.year}</td>
+                            <td class="py-3 px-4 font-medium text-slate-700">${item.bidang}</td>
+                            <td class="py-3 px-4 font-medium text-indigo-600">${item.tw}</td>
+                            <td class="py-3 px-4 text-slate-600 max-w-xs truncate">${item.program_nama || '-'}</td>
+                            <td class="py-3 px-4 text-center font-bold text-slate-800">${item.capaian || 0}%</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold ${item.isFinalized ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                                    ${item.isFinalized ? 'Final' : 'Draft'}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-right space-x-1">
+                                <button onclick="openSavedEntry('${item.year}', '${item.bidang}', '${item.tw}')" class="px-2.5 py-1.5 rounded-lg bg-brand-50 text-brand-700 hover:bg-brand-100 text-xs font-medium transition-colors">
+                                    <i class="fa-solid fa-pen-to-square mr-1"></i> Buka
+                                </button>
+                                <button onclick="deleteEntry('${key}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-medium transition-colors">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    } catch (e) {
+                        console.error("Error parsing summary item", e);
+                    }
+                }
+            }
+
+            if (!hasData) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-400 text-xs">
+                            Belum ada data evaluasi yang tersimpan. Silakan isi form di atas.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function openSavedEntry(year, bidang, tw) {
+            activeYear = year;
+            selectBidangAndTW(bidang, tw);
+        }
+
+        function deleteEntry(key) {
+            if (confirm("Apakah Anda yakin ingin menghapus data evaluasi ini?")) {
+                localStorage.removeItem(key);
+                renderSummaryTable();
+                showToast("Data berhasil dihapus.");
+                if (key === getStorageKey()) {
+                    loadFormData();
+                }
+            }
+        }
+
+        function exportDataJSON() {
+            const dataToExport = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('monev_')) {
+                    dataToExport.push(JSON.parse(localStorage.getItem(key)));
+                }
+            }
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `Backup_Monev_Kinerja_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // Helper Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            msgEl.textContent = message;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
